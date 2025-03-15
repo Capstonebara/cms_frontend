@@ -10,12 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-interface User {
-  id: string;
-  name: string;
-  [key: string]: any;
-}
+import { User } from "./users-accordion";
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
@@ -46,10 +41,7 @@ export function DeleteConfirmationDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          >
+          <AlertDialogAction onClick={onConfirm} className="">
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

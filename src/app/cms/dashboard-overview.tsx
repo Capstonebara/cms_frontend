@@ -107,7 +107,7 @@ export function DashboardOverview() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Today's Entries
+              Today&apos;s Entries
             </CardTitle>
             <ArrowUpRight className="h-4 w-4 text-emerald-500" />
           </CardHeader>
@@ -121,7 +121,9 @@ export function DashboardOverview() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Today's Exits</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Today&apos;s Exits
+            </CardTitle>
             <ArrowDownRight className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
