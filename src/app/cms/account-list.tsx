@@ -24,6 +24,7 @@ import { AddAccountModal } from "./add-account-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteAccount, getAllAccounts } from "./fetch";
 import { Bounce, toast } from "react-toastify";
+import { formatTimestamp } from "@/lib/common";
 
 interface Account {
   id: string;
@@ -171,7 +172,7 @@ export function AccountsList() {
                   </TableCell>
                   <TableCell>{getStatusBadge(account.status)}</TableCell>
                   <TableCell>{account.member}</TableCell>
-                  <TableCell>{account.created_time}</TableCell>
+                  <TableCell>{formatTimestamp(account.created_time)}</TableCell>
                   <TableCell>{account.last_login}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
