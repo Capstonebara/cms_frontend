@@ -28,3 +28,16 @@ export const faceSchema = z.object({
 });
 
 export type FaceSchema = z.infer<typeof faceSchema>;
+
+export const accountSchema = z
+  .object({
+    username: z.string(),
+    password: z.string(),
+    re_password: z.string(),
+  })
+  .refine((data) => data.password === data.re_password, {
+    message: "Passwords must match",
+    path: ["re_password"],
+  });
+
+export type AccountSchema = z.infer<typeof accountSchema>;

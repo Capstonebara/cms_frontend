@@ -10,8 +10,9 @@ import { DashboardSidebar } from "./dashboard-sidebar";
 import { DashboardOverview } from "./dashboard-overview";
 import { UsersAccordion } from "./users-accordion";
 import { AccessLogsAccordion } from "./access-logs-accordion";
+import { AccountsList } from "./account-list";
 
-type ViewType = "dashboard" | "users" | "logs" | "settings";
+type ViewType = "dashboard" | "users" | "logs" | "settings" | "accounts";
 
 export default function UserDashboard() {
   const [activeView, setActiveView] = useState<ViewType>("dashboard");
@@ -23,6 +24,8 @@ export default function UserDashboard() {
         return <DashboardOverview />;
       case "users":
         return <UsersAccordion />;
+      case "accounts":
+        return <AccountsList />;
       case "logs":
         return <AccessLogsAccordion />;
       default:

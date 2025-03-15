@@ -57,7 +57,6 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
   const [loading, setLoading] = useState(false);
 
   const onSubmit = async (form: DashboardSchema) => {
-    console.log("form", form);
     try {
       const response = await addUser(form);
 

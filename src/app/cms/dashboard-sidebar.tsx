@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Users, Clock, Settings, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  Users,
+  Clock,
+  Settings,
+  LogOut,
+  LayoutDashboard,
+  UserCircle,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
@@ -14,7 +21,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-type ViewType = "dashboard" | "users" | "logs" | "settings";
+type ViewType = "dashboard" | "users" | "logs" | "settings" | "accounts";
 
 interface DashboardSidebarProps {
   activeView: ViewType;
@@ -56,6 +63,15 @@ export function DashboardSidebar({
             >
               <Users className="h-5 w-5" />
               <span>Users</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={activeView === "accounts"}
+              onClick={() => setActiveView("accounts")}
+            >
+              <UserCircle className="h-5 w-5" />
+              <span>Accounts</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
