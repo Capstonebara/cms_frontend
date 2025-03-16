@@ -22,7 +22,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addUser } from "./fetch";
 import { Bounce, toast } from "react-toastify";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, Loader2 } from "lucide-react";
 import path from "path";
@@ -34,12 +34,14 @@ interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUserAdded: (newUser: User) => void;
+  user: string;
 }
 
 export function AddUserModal({
   isOpen,
   onClose,
   onUserAdded,
+  user,
 }: AddUserModalProps) {
   const {
     register,
@@ -61,6 +63,12 @@ export function AddUserModal({
   const [confirmStep, setConfirmStep] = useState(false);
   const [id, setId] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      reset({ username: user });
+    }
+  }, [user, reset]);
 
   const onSubmit = async (form: DashboardSchema) => {
     try {
@@ -301,6 +309,8 @@ export function AddUserModal({
                     id="username"
                     className="col-span-3"
                     {...register("username")}
+                    value={user || ""}
+                    disabled={!!user}
                   />
                 </div>
 

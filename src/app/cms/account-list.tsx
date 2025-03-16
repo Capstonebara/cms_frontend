@@ -17,6 +17,7 @@ import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteAccount, getAllAccounts } from "./fetch";
 import { Bounce, toast } from "react-toastify";
 import { formatTimestamp } from "@/lib/common";
+import { AddUserModal } from "./add-user-modal";
 
 interface Account {
   id: string;
@@ -32,7 +33,9 @@ export function AccountsList() {
   const [isAddAccountModalOpen, setIsAddAccountModalOpen] = useState(false);
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState("");
 
   useEffect(() => {
     if (!isAddAccountModalOpen) {
@@ -123,6 +126,11 @@ export function AccountsList() {
     );
   };
 
+  const handleAddUser = (username: string) => {
+    setUser(username);
+    setIsAddUserModalOpen(true);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -176,7 +184,7 @@ export function AccountsList() {
                         variant="ghost"
                         size="icon"
                         title="Add Member"
-                        onClick={() => {}}
+                        onClick={() => handleAddUser(account.username)}
                       >
                         <UserPlus className="h-4 w-4" />
                       </Button>
@@ -213,6 +221,13 @@ export function AccountsList() {
           </Table>
         </div>
       )}
+
+      <AddUserModal
+        isOpen={isAddUserModalOpen}
+        onClose={() => setIsAddUserModalOpen(false)}
+        onUserAdded={() => {}}
+        user={user}
+      />
 
       <AddAccountModal
         isOpen={isAddAccountModalOpen}

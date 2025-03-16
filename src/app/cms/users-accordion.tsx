@@ -173,6 +173,7 @@ export function UsersAccordion() {
         isOpen={isAddUserModalOpen}
         onClose={() => setIsAddUserModalOpen(false)}
         onUserAdded={handleUserAdded}
+        user=""
       />
 
       <DeleteConfirmationDialog
