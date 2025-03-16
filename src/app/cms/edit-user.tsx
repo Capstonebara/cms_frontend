@@ -161,8 +161,6 @@ export function EditUserModal({
                 id="username"
                 className="col-span-3"
                 {...register("username")}
-                disabled
-                readOnly
               />
             </div>
 
