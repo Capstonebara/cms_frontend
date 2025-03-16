@@ -11,15 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Plus,
-  Edit,
-  Trash2,
-  UserPlus,
-  Lock,
-  Unlock,
-  Loader,
-} from "lucide-react";
+import { Plus, Trash2, UserPlus, Lock, Unlock, Loader } from "lucide-react";
 import { AddAccountModal } from "./add-account-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteAccount, getAllAccounts } from "./fetch";
@@ -207,14 +199,6 @@ export function AccountsList() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        title="Edit Account"
-                        onClick={() => {}}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
                         title="Delete Account"
                         onClick={() => handleDeleteClick(account)}
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -246,7 +230,7 @@ export function AccountsList() {
                 name: accountToDelete.username,
                 username: accountToDelete.username,
                 apartment: "",
-                gender: "",
+                gender: "M",
                 phone: "",
                 email: "",
                 photoUrl: "",

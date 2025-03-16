@@ -9,23 +9,25 @@ import { AddUserModal } from "./add-user-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteUser, getUsers } from "./fetch";
 import { Bounce, toast } from "react-toastify";
+import { EditUserModal } from "./edit-user";
 
 export interface User {
   id: string;
   username: string;
   name: string;
   apartment: string;
-  gender: string;
+  gender: "M" | "F";
   phone: string;
   email: string;
   photoUrl: string;
 }
 
 export function UsersAccordion() {
-  const [users, setUsers] = useState<User[] | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -93,6 +95,17 @@ export function UsersAccordion() {
     }
   };
 
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setIsEditUserModalOpen(true);
+  };
+
+  const handleUserUpdated = (updatedUser: User) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
+    );
+  };
+
   if (!users) {
     return;
   }
@@ -135,10 +148,18 @@ export function UsersAccordion() {
               onDeleteUser={(user: User) => {
                 handleDeleteClick(user);
               }}
+              onEditUser={handleEditUser}
             />
           ))}
         </div>
       )}
+
+      <EditUserModal
+        user={selectedUser}
+        isOpen={isEditUserModalOpen}
+        onClose={() => setIsEditUserModalOpen(false)}
+        onUserUpdated={handleUserUpdated}
+      />
 
       <UserProfileModal
         user={selectedUser}

@@ -16,24 +16,15 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Eye, Trash2 } from "lucide-react";
-
-interface User {
-  id: string;
-  username: string;
-  name: string;
-  apartment: string;
-  gender: string;
-  phone: string;
-  email: string;
-  photoUrl: string;
-}
+import { Edit, Eye, Trash2 } from "lucide-react";
+import { User } from "./users-accordion";
 
 interface UserAccordionItemProps {
   username: string;
   users: User[];
   onViewUser: (user: User) => void;
   onDeleteUser: (user: User) => void;
+  onEditUser: (user: User) => void;
 }
 
 export function UserAccordionItem({
@@ -41,6 +32,7 @@ export function UserAccordionItem({
   users,
   onViewUser,
   onDeleteUser,
+  onEditUser,
 }: UserAccordionItemProps) {
   // Use the first user for the accordion header
   const firstUser = users[0];
@@ -95,6 +87,16 @@ export function UserAccordionItem({
                         title="View Details"
                       >
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Edit Account"
+                        onClick={() => {
+                          onEditUser(user);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"

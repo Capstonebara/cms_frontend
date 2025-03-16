@@ -123,3 +123,33 @@ export async function deleteAccount(accountId: string) {
 
   return res.json();
 }
+
+export async function editUser(form: DashboardSchema, id: string) {
+  const formData = {
+    username: form.username,
+    name: form.fullname,
+    apartment_number: form.apartment,
+    gender: form.gender,
+    phone: form.phone || "",
+    email: form.email || "",
+  };
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/update_resident?resident_id=${id}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    }
+  );
+
+  const result = await response.json();
+  if (!response.ok) {
+    console.log("Error response:", result);
+    throw new Error(result.message || "Edit user failed");
+  }
+
+  return result;
+}
