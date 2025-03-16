@@ -173,7 +173,11 @@ export function AccountsList() {
                   <TableCell>{getStatusBadge(account.status)}</TableCell>
                   <TableCell>{account.member}</TableCell>
                   <TableCell>{formatTimestamp(account.created_time)}</TableCell>
-                  <TableCell>{account.last_login}</TableCell>
+                  <TableCell>
+                    {account.last_login !== 0
+                      ? formatTimestamp(account.last_login)
+                      : "--"}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button
