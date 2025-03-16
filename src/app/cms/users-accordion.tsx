@@ -33,21 +33,19 @@ export function UsersAccordion() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAddUserModalOpen) {
-      async function fetchUsers() {
-        try {
-          setIsLoading(true);
-          const data = await getUsers();
-          setUsers(data);
-        } catch (error) {
-          console.error("Failed to fetch users", error);
-        } finally {
-          setIsLoading(false);
-        }
+    async function fetchUsers() {
+      try {
+        setIsLoading(true);
+        const data = await getUsers();
+        setUsers(data);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      } finally {
+        setIsLoading(false);
       }
-      fetchUsers();
     }
-  }, [isAddUserModalOpen]);
+    fetchUsers();
+  }, []);
 
   const handleViewUser = (user: User) => {
     setSelectedUser(user);
@@ -57,6 +55,10 @@ export function UsersAccordion() {
   const handleDeleteClick = (user: User) => {
     setUserToDelete(user);
     setIsDeleteDialogOpen(true);
+  };
+
+  const handleUserAdded = (newUser: User) => {
+    setUsers((prevUsers) => [...prevUsers, newUser]);
   };
 
   const handleDeleteUser = async () => {
@@ -170,6 +172,7 @@ export function UsersAccordion() {
       <AddUserModal
         isOpen={isAddUserModalOpen}
         onClose={() => setIsAddUserModalOpen(false)}
+        onUserAdded={handleUserAdded}
       />
 
       <DeleteConfirmationDialog

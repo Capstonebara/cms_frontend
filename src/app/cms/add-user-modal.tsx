@@ -28,13 +28,19 @@ import { Check, Loader2 } from "lucide-react";
 import path from "path";
 import { dashboardSchema, DashboardSchema } from "./type";
 import { FaceDetect } from "./face-detect";
+import { User } from "./users-accordion";
 
 interface AddUserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onUserAdded: (newUser: User) => void;
 }
 
-export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
+export function AddUserModal({
+  isOpen,
+  onClose,
+  onUserAdded,
+}: AddUserModalProps) {
   const {
     register,
     handleSubmit,
@@ -143,6 +149,21 @@ export function AddUserModal({ isOpen, onClose }: AddUserModalProps) {
       );
 
       if (embedResponse.ok) {
+        // Create new user object with the form data
+        const newUser: User = {
+          id: id,
+          username: username,
+          name: fullname,
+          apartment: apartment,
+          gender: gender,
+          phone: phone || "",
+          email: email || "",
+          photoUrl: "", // You might need to get the actual photo URL from the response
+        };
+
+        // Call the callback to update parent component's state
+        onUserAdded(newUser);
+
         reset();
 
         onClose();
