@@ -309,7 +309,7 @@ export function AddUserModal({
                     id="username"
                     className="col-span-3"
                     {...register("username")}
-                    value={user || ""}
+                    // value={user || ""}
                     disabled={!!user}
                   />
                 </div>
