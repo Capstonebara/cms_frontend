@@ -23,9 +23,9 @@ export async function POST(request: Request) {
     const projectRoot = process.cwd();
     // console.log("projectRoot", projectRoot);
     // const parentDir = path.join(projectRoot, "..");
-    const dataDir = path.join(projectRoot, "data");
+    const dataDir = path.join(projectRoot, "public");
 
-    const picsDir = path.join(dataDir, "pics", `${[name]}`);
+    const picsDir = path.join(dataDir, "data", "pics", `${[name]}`);
 
     await mkdir(picsDir, { recursive: true }); // Create the directory if it doesn't exist
 

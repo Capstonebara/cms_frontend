@@ -41,4 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-data/
+# Ignore specific data directories and files
+/public/data
+pics.zip
