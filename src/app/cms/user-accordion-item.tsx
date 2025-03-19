@@ -35,19 +35,12 @@ export function UserAccordionItem({
   onEditUser,
 }: UserAccordionItemProps) {
   // Use the first user for the accordion header
-  const firstUser = users[0];
 
   return (
     <Accordion type="single" collapsible className="border rounded-md">
       <AccordionItem value={username} className="border-none">
         <AccordionTrigger className="px-4 py-2 hover:no-underline hover:bg-muted/50">
           <div className="flex items-center">
-            <Avatar className="h-8 w-8 mr-2">
-              <AvatarImage src={firstUser.photoUrl} alt={firstUser.name} />
-              <AvatarFallback>
-                {firstUser.name.substring(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
             <div>
               <span className="font-medium">{username}</span>
               <span className="ml-2 text-sm text-muted-foreground">
@@ -61,6 +54,7 @@ export function UserAccordionItem({
             <TableHeader>
               <TableRow>
                 <TableHead>ID</TableHead>
+                <TableHead>Photo</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Apartment</TableHead>
                 <TableHead>Gender</TableHead>
@@ -73,6 +67,14 @@ export function UserAccordionItem({
               {users.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.id}</TableCell>
+                  <TableCell>
+                    <Avatar className="h-8 w-8 mr-2">
+                      <AvatarImage src={user.photoUrl} alt={user.name} />
+                      <AvatarFallback>
+                        {user.name.substring(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </TableCell>
                   <TableCell>{user.name}</TableCell>
                   <TableCell>{user.apartment}</TableCell>
                   <TableCell>{user.gender}</TableCell>
