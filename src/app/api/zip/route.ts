@@ -7,8 +7,9 @@ import { NextResponse } from "next/server";
 export async function POST() {
   try {
     const projectRoot = process.cwd();
-    const dataDir = path.join(projectRoot, "public");
-    const picsDir = path.join(dataDir, "data", "pics");
+    const publicDir = path.join(projectRoot, "public");
+    const dataDir = path.join(publicDir, "data");
+    const picsDir = path.join(dataDir, "pics");
 
     const zipFiles: string[] = [];
 
