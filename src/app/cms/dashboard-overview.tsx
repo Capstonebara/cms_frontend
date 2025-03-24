@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Users, ArrowUpRight, ArrowDownRight, Home, Clock } from "lucide-react";
 import { RecentActivityCard } from "./recent-activity-card";
+import useWebSocket from "@/hooks/use-websocket";
 
 interface Stats {
   totalUsers: number;
@@ -17,8 +18,9 @@ interface Stats {
   todayExits: number;
 }
 
-interface Activity {
-  id: number;
+export interface Activity {
+  id: string;
+  device_id: string;
   name: string;
   photoUrl: string;
   timestamp: string;
@@ -35,41 +37,7 @@ export function DashboardOverview() {
     todayExits: 12,
   };
 
-  // Mock data for recent activity
-  const recentActivity: Activity[] = [
-    {
-      id: 1,
-      name: "John Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 15 * 60000).toISOString(), // 15 minutes ago
-      type: "entry",
-      apartment: "A-1203",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 45 * 60000).toISOString(), // 45 minutes ago
-      type: "exit",
-      apartment: "B-2104",
-    },
-    {
-      id: 3,
-      name: "Robert Smith",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 90 * 60000).toISOString(), // 90 minutes ago
-      type: "entry",
-      apartment: "C-3305",
-    },
-    {
-      id: 4,
-      name: "Emily Johnson",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 120 * 60000).toISOString(), // 2 hours ago
-      type: "exit",
-      apartment: "A-1506",
-    },
-  ];
+  const websocket = useWebSocket("ws://localhost:5500/logs/jetson-1");
 
   return (
     <div className="space-y-6">
@@ -142,8 +110,8 @@ export function DashboardOverview() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => (
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-5">
+              {[...websocket.data].reverse().map((activity) => (
                 <RecentActivityCard key={activity.id} activity={activity} />
               ))}
             </div>

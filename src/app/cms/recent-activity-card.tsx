@@ -1,26 +1,13 @@
-import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { LogIn, LogOut } from "lucide-react";
-
-interface Activity {
-  id: number;
-  name: string;
-  photoUrl: string;
-  timestamp: string;
-  type: "entry" | "exit";
-  apartment: string;
-}
+import { Activity } from "./dashboard-overview";
 
 interface RecentActivityCardProps {
   activity: Activity;
 }
 
 export function RecentActivityCard({ activity }: RecentActivityCardProps) {
-  const formattedTime = formatDistanceToNow(new Date(activity.timestamp), {
-    addSuffix: true,
-  });
-
   return (
     <div className="flex items-center space-x-4 rounded-md border p-3">
       <Avatar className="h-10 w-10">
@@ -33,7 +20,7 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
       <div className="flex-1 space-y-1">
         <p className="text-sm font-medium leading-none">{activity.name}</p>
         <p className="text-sm text-muted-foreground">
-          {activity.apartment} • {formattedTime}
+          {activity.apartment} • {activity.timestamp}
         </p>
       </div>
 
