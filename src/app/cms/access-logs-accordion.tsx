@@ -10,6 +10,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { LogIn, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getLogsByDay } from "./fetch";
 
 interface AccessLog {
   id: number;
@@ -18,111 +20,34 @@ interface AccessLog {
   timestamp: string;
   type: "entry" | "exit";
   apartment: string;
+  device: string;
 }
 
 type AccessLogsByDate = {
   [date: string]: AccessLog[];
 };
 
-// Mock access log data grouped by date
-const accessLogsByDate: AccessLogsByDate = {
-  Today: [
-    {
-      id: 1,
-      name: "John Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 15 * 60000).toISOString(), // 15 minutes ago
-      type: "entry",
-      apartment: "A-1203",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 45 * 60000).toISOString(), // 45 minutes ago
-      type: "exit",
-      apartment: "B-2104",
-    },
-    {
-      id: 3,
-      name: "Robert Smith",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 90 * 60000).toISOString(), // 90 minutes ago
-      type: "entry",
-      apartment: "C-3305",
-    },
-    {
-      id: 4,
-      name: "Emily Johnson",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 120 * 60000).toISOString(), // 2 hours ago
-      type: "exit",
-      apartment: "A-1506",
-    },
-  ],
-  Yesterday: [
-    {
-      id: 5,
-      name: "Michael Wilson",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(
-        Date.now() - 24 * 60 * 60000 - 2 * 60 * 60000
-      ).toISOString(), // Yesterday, 2 hours ago
-      type: "entry",
-      apartment: "D-4207",
-    },
-    {
-      id: 6,
-      name: "John Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(
-        Date.now() - 24 * 60 * 60000 - 3 * 60 * 60000
-      ).toISOString(), // Yesterday, 3 hours ago
-      type: "exit",
-      apartment: "A-1203",
-    },
-    {
-      id: 7,
-      name: "Jane Doe",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(
-        Date.now() - 24 * 60 * 60000 - 5 * 60 * 60000
-      ).toISOString(), // Yesterday, 5 hours ago
-      type: "entry",
-      apartment: "B-2104",
-    },
-  ],
-  "Last Week": [
-    {
-      id: 8,
-      name: "Robert Smith",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000).toISOString(), // 3 days ago
-      type: "exit",
-      apartment: "C-3305",
-    },
-    {
-      id: 9,
-      name: "Emily Johnson",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 4 * 24 * 60 * 60000).toISOString(), // 4 days ago
-      type: "entry",
-      apartment: "A-1506",
-    },
-    {
-      id: 10,
-      name: "Michael Wilson",
-      photoUrl: "/placeholder.svg?height=40&width=40",
-      timestamp: new Date(Date.now() - 5 * 24 * 60 * 60000).toISOString(), // 5 days ago
-      type: "exit",
-      apartment: "D-4207",
-    },
-  ],
-};
-
 export function AccessLogsAccordion() {
+  const [accessLogs, setAccessLogs] = useState<AccessLogsByDate>();
+
+  useEffect(() => {
+    async function fetchAccessLog() {
+      try {
+        const data = await getLogsByDay();
+        setAccessLogs(data);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    }
+    fetchAccessLog();
+  }, []);
+
+  if (!accessLogs) {
+    return;
+  }
+
   // Calculate total logs
-  const totalLogs = Object.values(accessLogsByDate).reduce(
+  const totalLogs = Object.values(accessLogs).reduce(
     (total, logs) => total + logs.length,
     0
   );
@@ -142,7 +67,7 @@ export function AccessLogsAccordion() {
       </div>
 
       <div className="space-y-4">
-        {Object.entries(accessLogsByDate).map(([date, logs]) => (
+        {Object.entries(accessLogs).map(([date, logs]) => (
           <Accordion
             key={date}
             type="single"
@@ -173,10 +98,15 @@ export function AccessLogsAccordion() {
                       </Avatar>
 
                       <div className="flex-1">
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-x-2">
                           <p className="font-medium">{log.name}</p>
-                          <p className="ml-2 text-sm text-muted-foreground">
+                          <p className="font-medium">•</p>
+                          <p className="text-sm text-muted-foreground">
                             {log.apartment}
+                          </p>
+                          <p className="font-medium">•</p>
+                          <p className="text-sm text-muted-foreground">
+                            {log.device}
                           </p>
                         </div>
                         <p className="text-sm text-muted-foreground">

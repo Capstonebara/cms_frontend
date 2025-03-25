@@ -7,9 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Users, ArrowUpRight, ArrowDownRight, Home, Clock } from "lucide-react";
+import { Users, ArrowUpRight, ArrowDownRight, Home } from "lucide-react";
 import { RecentActivityCard } from "./recent-activity-card";
 import useWebSocket from "@/hooks/use-websocket";
+import { useEffect, useState } from "react";
+import { getLogs } from "./fetch";
 
 interface Stats {
   totalUsers: number;
@@ -23,7 +25,7 @@ export interface Activity {
   device_id: string;
   name: string;
   photoUrl: string;
-  timestamp: string;
+  timestamp: number;
   type: "entry" | "exit";
   apartment: string;
 }
@@ -37,7 +39,22 @@ export function DashboardOverview() {
     todayExits: 12,
   };
 
-  const websocket = useWebSocket("ws://localhost:5500/logs/jetson-1");
+  const [logs, setLogs] = useState<Activity[]>([]);
+
+  const websocket = useWebSocket("ws://localhost:5500/client_logs");
+  console.log("websocket", websocket.data);
+
+  useEffect(() => {
+    async function fetchLogs() {
+      try {
+        const data = await getLogs();
+        setLogs(data);
+      } catch (error) {
+        console.error("Failed to fetch users", error);
+      }
+    }
+    fetchLogs();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -110,7 +127,7 @@ export function DashboardOverview() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-5">
+            <div className="space-y-4 h-[300px] overflow-y-auto pr-5">
               {[...websocket.data].reverse().map((activity) => (
                 <RecentActivityCard key={activity.id} activity={activity} />
               ))}
@@ -120,16 +137,16 @@ export function DashboardOverview() {
 
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Activity by Hour</CardTitle>
+            <CardTitle>Activity by Day</CardTitle>
             <CardDescription>
               Entry and exit patterns throughout the day
             </CardDescription>
           </CardHeader>
-          <CardContent className="h-[300px] flex items-center justify-center">
-            <div className="text-center text-muted-foreground flex flex-col items-center">
-              <Clock className="h-10 w-10 mb-2 opacity-50" />
-              <p>Activity chart would appear here</p>
-              <p className="text-xs">Showing hourly entry/exit data</p>
+          <CardContent>
+            <div className="space-y-4 h-[300px] overflow-y-auto pr-5">
+              {logs.map((activity) => (
+                <RecentActivityCard key={activity.id} activity={activity} />
+              ))}
             </div>
           </CardContent>
         </Card>

@@ -153,3 +153,39 @@ export async function editUser(form: DashboardSchema, id: string) {
 
   return result;
 }
+
+export async function getLogs() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/recent_logs`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch logs");
+  }
+
+  return res.json();
+}
+
+export async function getLogsByDay() {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/logs_by_day`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch logs");
+  }
+
+  return res.json();
+}

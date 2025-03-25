@@ -3,12 +3,7 @@
 import { Activity } from "@/app/cms/dashboard-overview";
 import { useEffect, useState } from "react";
 
-interface WebSocketHook {
-  status: "connected" | "disconnected" | "error";
-  data: Activity[];
-}
-
-const useWebSocket = (url: string): WebSocketHook => {
+const useWebSocket = (url: string) => {
   const [data, setData] = useState<Activity[]>([]);
   const [status, setStatus] = useState<"connected" | "disconnected" | "error">(
     "disconnected"
@@ -27,7 +22,7 @@ const useWebSocket = (url: string): WebSocketHook => {
         const parsedData = JSON.parse(event.data);
         setData((prev) => [...prev, parsedData]);
       } catch (error) {
-        console.error("Failed to parse WebSocket message as JSON:", error);
+        console.error("Failed to parse WebSocket message:", error);
       }
     };
 
