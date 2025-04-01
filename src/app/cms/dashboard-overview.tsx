@@ -12,12 +12,14 @@ import { RecentActivityCard } from "./recent-activity-card";
 import useWebSocket from "@/hooks/use-websocket";
 import { useEffect, useState } from "react";
 import { getLogs } from "./fetch";
+import useWebSocketStats from "@/hooks/use-websocket-stats";
+import { Spinner } from "@/components/ui/spinner";
 
-interface Stats {
-  totalUsers: number;
-  totalApartments: number;
-  todayEntries: number;
-  todayExits: number;
+export interface Stats {
+  total_account: number;
+  total_resident: number;
+  total_entry: number;
+  total_exit: number;
 }
 
 export interface Activity {
@@ -31,18 +33,11 @@ export interface Activity {
 }
 
 export function DashboardOverview() {
-  // Mock data for the dashboard
-  const stats: Stats = {
-    totalUsers: 42,
-    totalApartments: 28,
-    todayEntries: 15,
-    todayExits: 12,
-  };
-
   const [logs, setLogs] = useState<Activity[]>([]);
+  const [loading, isLoading] = useState(true);
 
   const websocket = useWebSocket("ws://localhost:5500/client_logs");
-  console.log("websocket", websocket.data);
+  const stats = useWebSocketStats("ws://localhost:5500/admin/logs_total_ws");
 
   useEffect(() => {
     async function fetchLogs() {
@@ -51,6 +46,8 @@ export function DashboardOverview() {
         setLogs(data);
       } catch (error) {
         console.error("Failed to fetch users", error);
+      } finally {
+        isLoading(false);
       }
     }
     fetchLogs();
@@ -63,11 +60,15 @@ export function DashboardOverview() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Accounts
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalUsers}</div>
+            <div className="text-2xl font-bold">
+              {stats.data?.total_account || <Spinner />}
+            </div>
             <p className="text-xs text-muted-foreground">
               Registered users in the system
             </p>
@@ -76,13 +77,13 @@ export function DashboardOverview() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Apartments
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalApartments}</div>
+            <div className="text-2xl font-bold">
+              {stats.data?.total_resident || <Spinner />}
+            </div>
             <p className="text-xs text-muted-foreground">
               Apartments with registered residents
             </p>
@@ -97,7 +98,9 @@ export function DashboardOverview() {
             <ArrowUpRight className="h-4 w-4 text-emerald-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.todayEntries}</div>
+            <div className="text-2xl font-bold">
+              {stats.data?.total_entry || <Spinner />}
+            </div>
             <p className="text-xs text-muted-foreground">
               People entered today
             </p>
@@ -112,7 +115,9 @@ export function DashboardOverview() {
             <ArrowDownRight className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.todayExits}</div>
+            <div className="text-2xl font-bold">
+              {stats.data?.total_exit || <Spinner />}
+            </div>
             <p className="text-xs text-muted-foreground">People exited today</p>
           </CardContent>
         </Card>
@@ -143,11 +148,18 @@ export function DashboardOverview() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4 h-[300px] overflow-y-auto pr-5">
-              {logs.map((activity) => (
-                <RecentActivityCard key={activity.id} activity={activity} />
-              ))}
-            </div>
+            {!loading && (
+              <div className="space-y-4 h-[300px] overflow-y-auto pr-5">
+                {logs.map((activity) => (
+                  <RecentActivityCard key={activity.id} activity={activity} />
+                ))}
+              </div>
+            )}
+            {loading && (
+              <div className="flex items-center justify-center h-[300px]">
+                <Spinner />
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

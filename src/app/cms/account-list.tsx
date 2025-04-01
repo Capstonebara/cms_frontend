@@ -11,13 +11,14 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, UserPlus, Lock, Unlock, Loader } from "lucide-react";
+import { Plus, Trash2, UserPlus, Lock, Unlock } from "lucide-react";
 import { AddAccountModal } from "./add-account-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteAccount, getAllAccounts } from "./fetch";
 import { Bounce, toast } from "react-toastify";
 import { formatTimestamp } from "@/lib/common";
 import { AddUserModal } from "./add-user-modal";
+import { Spinner } from "@/components/ui/spinner";
 
 interface Account {
   id: string;
@@ -147,7 +148,7 @@ export function AccountsList() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
-          <Loader className="animate-spin h-10 w-10 text-gray-500" />
+          <Spinner />
         </div>
       ) : (
         <div className="rounded-md border px-4">

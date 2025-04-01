@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Loader } from "lucide-react";
+import { Plus } from "lucide-react";
 import { UserAccordionItem } from "./user-accordion-item";
 import { UserProfileModal } from "./user-profile-modal";
 import { AddUserModal } from "./add-user-modal";
@@ -10,6 +10,7 @@ import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteUser, getUsers } from "./fetch";
 import { Bounce, toast } from "react-toastify";
 import { EditUserModal } from "./edit-user";
+import { Spinner } from "@/components/ui/spinner";
 
 export interface User {
   id: string;
@@ -137,7 +138,7 @@ export function UsersAccordion() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-10">
-          <Loader className="animate-spin h-10 w-10 text-gray-500" />
+          <Spinner />
         </div>
       ) : (
         <div className="space-y-4">

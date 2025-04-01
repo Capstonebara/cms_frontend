@@ -24,11 +24,12 @@ import { addUser } from "./fetch";
 import { Bounce, toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Loader2 } from "lucide-react";
+import { Check } from "lucide-react";
 import path from "path";
 import { dashboardSchema, DashboardSchema } from "./type";
 import { FaceDetect } from "./face-detect";
 import { User } from "./users-accordion";
+import { Spinner } from "@/components/ui/spinner";
 
 interface AddUserModalProps {
   isOpen: boolean;
@@ -278,7 +279,7 @@ export function AddUserModal({
         <DialogFooter className="flex justify-between sm:justify-between">
           {loading ? (
             <Button disabled>
-              <Loader2 className="animate-spin" />
+              <Spinner />
               Please wait
             </Button>
           ) : (
