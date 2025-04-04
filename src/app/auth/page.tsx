@@ -28,6 +28,9 @@ export default function Auth() {
     try {
       const response = await loginUser(data);
 
+      // save to local storage
+      localStorage.setItem("valid", response.message);
+
       if (response.success) {
         toast.success(response.message, {
           position: "top-right",

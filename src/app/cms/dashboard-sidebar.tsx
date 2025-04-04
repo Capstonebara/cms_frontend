@@ -20,6 +20,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 type ViewType = "dashboard" | "users" | "logs" | "settings" | "accounts";
 
@@ -32,6 +34,13 @@ export function DashboardSidebar({
   activeView,
   setActiveView,
 }: DashboardSidebarProps) {
+  const router = useRouter();
+
+  const handleSignOut = useCallback(() => {
+    localStorage.clear();
+    router.push("/auth");
+  }, [router]);
+
   return (
     <Sidebar>
       <SidebarHeader className="border-b">
@@ -97,7 +106,10 @@ export function DashboardSidebar({
       <SidebarFooter className="border-t p-4">
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton>
+            <SidebarMenuButton
+              className="cursor-pointer"
+              onClick={handleSignOut}
+            >
               <LogOut className="h-5 w-5" />
               <span>Sign out</span>
             </SidebarMenuButton>
