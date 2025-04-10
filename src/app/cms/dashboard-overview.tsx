@@ -10,10 +10,12 @@ import {
 import { Users, ArrowUpRight, ArrowDownRight, Home } from "lucide-react";
 import { RecentActivityCard } from "./recent-activity-card";
 import useWebSocket from "@/hooks/use-websocket";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getLogs } from "./fetch";
 import useWebSocketStats from "@/hooks/use-websocket-stats";
 import { Spinner } from "@/components/ui/spinner";
+import { LogPics } from "./log-pics";
+import { formatTimestamp } from "@/lib/common";
 
 export interface Stats {
   total_account: number;
@@ -26,10 +28,10 @@ export interface Activity {
   id: string;
   device_id: string;
   name: string;
-  photoUrl: string;
   timestamp: number;
   type: "entry" | "exit";
   apartment: string;
+  captured: string;
 }
 
 export function DashboardOverview() {
@@ -52,6 +54,10 @@ export function DashboardOverview() {
     }
     fetchLogs();
   }, []);
+
+  const piclogs = useMemo(() => {
+    return websocket.data[websocket.data.length - 1];
+  }, [websocket.data]);
 
   return (
     <div className="space-y-6">
@@ -153,6 +159,27 @@ export function DashboardOverview() {
         </Card>
 
         <Card className="col-span-1">
+          {!piclogs && (
+            <CardHeader>
+              <CardTitle>Captured</CardTitle>
+              <CardDescription>Images captured real-time</CardDescription>
+            </CardHeader>
+          )}
+          {piclogs && (
+            <>
+              <CardHeader>
+                <CardTitle>Captured</CardTitle>
+                <CardDescription>
+                  Images captured from the {piclogs.device_id} in{" "}
+                  {formatTimestamp(piclogs.timestamp)}
+                </CardDescription>
+              </CardHeader>
+              <LogPics captured={piclogs.captured} />
+            </>
+          )}
+        </Card>
+
+        <Card className="col-span-2">
           <CardHeader>
             <CardTitle>Activity by Day</CardTitle>
             <CardDescription>
