@@ -48,20 +48,6 @@ export function UsersAccordion() {
     fetchUsers();
   }, []);
 
-  const handleViewUser = (user: User) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
-  };
-
-  const handleDeleteClick = (user: User) => {
-    setUserToDelete(user);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleUserAdded = (newUser: User) => {
-    setUsers((prevUsers) => [...prevUsers, newUser]);
-  };
-
   const handleDeleteUser = async () => {
     if (userToDelete) {
       try {
@@ -96,6 +82,22 @@ export function UsersAccordion() {
       setIsDeleteDialogOpen(false);
       setUserToDelete(null);
     }
+  };
+
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (user: User) => {
+    setUserToDelete(user);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleUserAdded = (newUser: User) => {
+    setUsers((prevUsers) =>
+      Array.isArray(prevUsers) ? [...prevUsers, newUser] : [newUser]
+    );
   };
 
   const handleEditUser = (user: User) => {
