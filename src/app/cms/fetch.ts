@@ -189,3 +189,21 @@ export async function getLogsByDay() {
 
   return res.json();
 }
+
+export async function updateStatusAccount(username: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/update_account?username=${username}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch logs");
+  }
+
+  return res.json();
+}

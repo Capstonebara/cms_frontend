@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, UserPlus, Lock, Unlock } from "lucide-react";
 import { AddAccountModal } from "./add-account-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
-import { deleteAccount, getAllAccounts } from "./fetch";
+import { deleteAccount, getAllAccounts, updateStatusAccount } from "./fetch";
 import { Bounce, toast } from "react-toastify";
 import { formatTimestamp } from "@/lib/common";
 import { AddUserModal } from "./add-user-modal";
@@ -103,16 +103,45 @@ export function AccountsList() {
     }
   };
 
-  const toggleAccountStatus = (accountId: string) => {
-    setAccounts(
-      accounts.map((account) => {
-        if (account.id === accountId) {
-          const newStatus = account.status ? false : true;
-          return { ...account, status: newStatus };
-        }
-        return account;
-      })
-    );
+  const toggleAccountStatus = async (username: string) => {
+    console.log(username);
+    try {
+      const response = await updateStatusAccount(username);
+      if (response.success) {
+        setAccounts(
+          (prevAccounts) =>
+            prevAccounts?.map((account) =>
+              account.username === username
+                ? { ...account, status: !account.status }
+                : account
+            ) || []
+        );
+
+        toast.success(response.message, {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: true,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+      }
+    } catch {
+      toast.error("Failed to update account status", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
   };
 
   const getStatusBadge = (status: Account["status"]) => {
@@ -197,7 +226,7 @@ export function AccountsList() {
                             ? "Lock Account"
                             : "Unlock Account"
                         }
-                        onClick={() => toggleAccountStatus(account.id)}
+                        onClick={() => toggleAccountStatus(account.username)}
                       >
                         {account.status === true ? (
                           <Lock className="h-4 w-4" />
