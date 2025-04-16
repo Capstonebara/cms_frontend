@@ -38,8 +38,8 @@ export function DashboardOverview() {
   const [logs, setLogs] = useState<Activity[]>([]);
   const [loading, isLoading] = useState(true);
 
-  const websocket = useWebSocket("ws://localhost:5500/client_logs");
-  const stats = useWebSocketStats("ws://localhost:5500/admin/logs_total_ws");
+  const websocket = useWebSocket(process.env.WEBSOCKET_STATS_URL || "");
+  const stats = useWebSocketStats(process.env.WEBSOCKET_CLIENT_LOG_URL || "");
 
   useEffect(() => {
     async function fetchLogs() {
