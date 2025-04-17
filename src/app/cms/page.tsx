@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import UserDashboard from "./user-dashboard";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export default function CMS() {
   // get items from local storage
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const router = useRouter();
 
   useEffect(() => {
     const valid = localStorage.getItem("valid");
@@ -25,6 +28,7 @@ export default function CMS() {
   }
 
   if (!isValid) {
+    router.push("/auth");
     return (
       <>
         <div className="flex h-screen items-center justify-center">
