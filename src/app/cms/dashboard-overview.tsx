@@ -38,8 +38,10 @@ export function DashboardOverview() {
   const [logs, setLogs] = useState<Activity[]>([]);
   const [loading, isLoading] = useState(true);
 
-  const websocket = useWebSocket(process.env.WEBSOCKET_STATS_URL || "");
-  const stats = useWebSocketStats(process.env.WEBSOCKET_CLIENT_LOG_URL || "");
+  const websocket = useWebSocket("wss://api.fptuaiclub.me/client_logs");
+  const stats = useWebSocketStats(
+    "wss://api.fptuaiclub.me/admin/logs_total_ws"
+  );
 
   useEffect(() => {
     async function fetchLogs() {

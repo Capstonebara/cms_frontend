@@ -71,7 +71,7 @@ export async function addAccount(form: AccountSchema) {
     password: form.password,
   };
 
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
