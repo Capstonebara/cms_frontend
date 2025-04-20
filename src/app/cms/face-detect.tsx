@@ -217,33 +217,34 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     const video = videoRef.current;
 
     try {
-      // Create a square crop centered on the face
-      const centerX = boundingBox.x + boundingBox.width / 2;
-      const centerY = boundingBox.y + boundingBox.height / 2;
+      // Always use the intrinsic video size for cropping
+      const videoW = video.videoWidth;
+      const videoH = video.videoHeight;
 
-      // Use larger dimension and add padding
-      const sideLength =
-        Math.max(boundingBox.width, boundingBox.height) *
-        (isFirstCapture.current ? 1.5 : 1);
+      // Calculate scaling factors between detection (display) and actual video
+      const scaleX = videoW / video.width;
+      const scaleY = videoH / video.height;
 
-      // Calculate boundaries of the square crop
-      const squareX = Math.max(0, centerX - sideLength / 2);
-      const squareY = Math.max(0, centerY - sideLength / 2);
-      const squareWidth = Math.min(video.width - squareX, sideLength);
-      const squareHeight = Math.min(video.height - squareY, sideLength);
+      // Convert bounding box coordinates to intrinsic video coordinates
+      const boxX = boundingBox.x * scaleX;
+      const boxY = boundingBox.y * scaleY;
+      const boxW = boundingBox.width * scaleX;
+      const boxH = boundingBox.height * scaleY;
 
-      // Scale to match actual video dimensions
-      const scaleX = video.videoWidth / video.width;
-      const scaleY = video.videoHeight / video.height;
-      const scaledX = squareX * scaleX;
-      const scaledY = squareY * scaleY;
-      const scaledWidth = squareWidth * scaleX;
-      const scaledHeight = squareHeight * scaleY;
+      // Center and side length for square crop (tune multiplier for more/less background)
+      const centerX = boxX + boxW / 2;
+      const centerY = boxY + boxH / 2;
+      const sideLength = Math.max(boxW, boxH) * 1.3; // 1.2~1.4 for tight face, increase for more background
 
-      // Create canvas with compatibility check
+      // Ensure crop stays within video bounds
+      const cropX = Math.max(0, centerX - sideLength / 2);
+      const cropY = Math.max(0, centerY - sideLength / 2);
+      const cropW = Math.min(sideLength, videoW - cropX);
+      const cropH = Math.min(sideLength, videoH - cropY);
+
+      // Prepare output canvas
       const isOffscreenCanvasSupported = typeof OffscreenCanvas !== "undefined";
       let outputCanvas: OffscreenCanvas | HTMLCanvasElement;
-
       if (isOffscreenCanvasSupported) {
         outputCanvas = new OffscreenCanvas(224, 224);
       } else {
@@ -257,18 +258,8 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
         | OffscreenCanvasRenderingContext2D;
       if (!ctx) return false;
 
-      // Draw directly to 224x224 canvas without preserving aspect ratio
-      ctx.drawImage(
-        video,
-        scaledX,
-        scaledY,
-        scaledWidth,
-        scaledHeight,
-        0,
-        0,
-        224,
-        224
-      );
+      // Draw the crop to the output canvas, stretching to 224x224
+      ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, 224, 224);
 
       // Convert to blob
       if (isOffscreenCanvasSupported) {
@@ -355,8 +346,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           );
         });
       }
-
-      // Continue with existing OffscreenCanvas implementation...
     } catch (error) {
       console.error("Error capturing frame:", error);
       return false;
