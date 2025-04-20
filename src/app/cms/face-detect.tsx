@@ -54,10 +54,10 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   // Reduce model size for mobile
   const TINY_FACE_DETECTOR_OPTIONS = useMemo(() => {
     return new faceapi.TinyFaceDetectorOptions({
-      inputSize: 224,
-      scoreThreshold: 0.2,
+      inputSize: isMobile ? 160 : 512, // Smaller for mobile (was 320)
+      scoreThreshold: isMobile ? 0.3 : 0.4, // More sensitive on mobile
     });
-  }, []);
+  }, [isMobile]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 720, height: 560 });
@@ -103,7 +103,10 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           height: newHeight,
         });
 
-        const circleDiameter = Math.min(newWidth, newHeight) * 0.65;
+        // IMPORTANT FIX: Force circle to be perfectly round
+        // Use width only for diameter calculation (ignore height)
+
+        const circleDiameter = Math.min(newWidth, newWidth) * 0.65;
 
         setCircleSize({
           width: circleDiameter,
@@ -184,19 +187,44 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   };
 
   const getFaceDirection = ({ yaw, pitch }: { yaw: number; pitch: number }) => {
-    if (!isMobile) {
-      if (pitch < 90 && yaw >= -2 && yaw <= 15) return "Up";
-      if (pitch > 170 && yaw >= -2 && yaw <= 15) return "Down";
-      if (yaw < 0) return "Right";
-      if (yaw > 15) return "Left";
+    // Different thresholds based on device type
+    const thresholds = {
+      upDown: isMobile ? 85 : 90,
+      upUp: isMobile ? 175 : 170,
+      leftRight: isMobile ? -15 : -20,
+      rightLeft: isMobile ? 15 : 20,
+    };
 
-      return "Straight";
-    }
+    // if (!isMobile) {
+    //   if (pitch < 90 && yaw >= -2 && yaw <= 15) return "Up";
+    //   if (pitch > 170 && yaw >= -2 && yaw <= 15) return "Down";
+    //   if (yaw < 0) return "Right";
+    //   if (yaw > 15) return "Left";
 
-    if (pitch < 90 && yaw >= -10 && yaw <= 15) return "Up";
-    if (pitch > 170 && yaw >= -10 && yaw <= 15) return "Down";
-    if (yaw < -20) return "Right";
-    if (yaw > 20) return "Left";
+    //   return "Straight";
+    // }
+
+    // if (pitch < 90 && yaw >= -10 && yaw <= 15) return "Up";
+    // if (pitch > 170 && yaw >= -10 && yaw <= 15) return "Down";
+    // if (yaw < -20) return "Right";
+    // if (yaw > 20) return "Left";
+
+    // return "Straight";
+
+    if (
+      pitch < thresholds.upDown &&
+      yaw >= thresholds.leftRight &&
+      yaw <= thresholds.rightLeft
+    )
+      return "Up";
+    if (
+      pitch > thresholds.upUp &&
+      yaw >= thresholds.leftRight &&
+      yaw <= thresholds.rightLeft
+    )
+      return "Down";
+    if (yaw < thresholds.leftRight) return "Right";
+    if (yaw > thresholds.rightLeft) return "Left";
 
     return "Straight";
   };
@@ -231,17 +259,28 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       const boxW = boundingBox.width * scaleX;
       const boxH = boundingBox.height * scaleY;
 
-      // Center and side length for square crop (tune multiplier for more/less background)
+      // CRITICAL FIX: Force square crop to prevent stretching
+      // Center and side length for square crop (use max of width/height)
       const centerX = boxX + boxW / 2;
       const centerY = boxY + boxH / 2;
+
+      // const sideLength = Math.max(boxW, boxH) * faceMultiplier;
       const sideLength =
         Math.max(boxW, boxH) * (isFirstCapture.current ? 1.2 : 1); // Larger for first capture (main.jpg)
 
-      // Ensure crop stays within video bounds
+      // // Ensure crop stays within video bounds
+      // const cropX = Math.max(0, centerX - sideLength / 2);
+      // const cropY = Math.max(0, centerY - sideLength / 2);
+      // const cropW = Math.min(sideLength, videoW - cropX);
+      // const cropH = Math.min(sideLength, videoH - cropY);
+      // Ensure crop stays within video bounds as a perfect square
       const cropX = Math.max(0, centerX - sideLength / 2);
       const cropY = Math.max(0, centerY - sideLength / 2);
-      const cropW = Math.min(sideLength, videoW - cropX);
-      const cropH = Math.min(sideLength, videoH - cropY);
+      const cropSize = Math.min(sideLength, videoW - cropX, videoH - cropY);
+
+      // Use exact same width and height for a perfect square crop
+      const cropW = cropSize;
+      const cropH = cropSize;
 
       // Prepare output canvas
       const isOffscreenCanvasSupported = typeof OffscreenCanvas !== "undefined";
@@ -385,8 +424,19 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       if (processingRef.current) return;
 
       // Skip frames on mobile for better performance
-      if (isMobile) {
-        frameSkipCount = (frameSkipCount + 1) % 2;
+      // if (isMobile && !isIOS) {
+      //   frameSkipCount = (frameSkipCount + 1) % 2;
+      //   if (frameSkipCount !== 0) return;
+      // }
+
+      // if (isIOS) {
+      //   frameSkipCount = (frameSkipCount + 1) % 3;
+      //   if (frameSkipCount !== 0) return;
+      // }
+
+      if (isMobile && !isIOS) {
+        // Reduce frame skipping for Android
+        frameSkipCount = (frameSkipCount + 1) % 1; // Process every frame
         if (frameSkipCount !== 0) return;
       }
 
@@ -442,7 +492,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           setIsDone(true);
           setConfirmStep(true);
           processingRef.current = false;
-
+          stopWebcam(); // Add this line to stop the webcam
           return;
         }
 
@@ -499,48 +549,55 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     }
   };
 
-  // Modified camera activation with iOS-specific constraints
+  // Update your camera activation useEffect
   useEffect(() => {
     if (isModelsLoaded && videoRef.current && !isDone) {
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: "user",
-        },
-      };
+      const activateCamera = async () => {
+        const constraints: MediaStreamConstraints = {
+          video: {
+            facingMode: "user",
+            // width: { ideal: isMobile ? 1280 : 720 }, // Lower resolution for iOS
+            // height: { ideal: isMobile ? 720 : 1280 },
+          },
+        };
 
-      // Special handling for iOS devices
-      if (isIOS) {
-        // Force hardware acceleration for iOS
-        if (videoRef.current) {
-          videoRef.current.setAttribute("playsinline", "true");
-          videoRef.current.setAttribute("webkit-playsinline", "true");
-        }
-      }
-
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
           if (videoRef.current) {
+            streamRef.current = stream; // Save stream reference
             videoRef.current.srcObject = stream;
             streamRef.current = stream;
+            videoRef.current.muted = true;
+            videoRef.current.playsInline = true;
+            videoRef.current.setAttribute("playsinline", "true");
 
-            // For iOS, we need to call play() after setting srcObject
-            if (isIOS) {
-              videoRef.current.play().catch((error) => {
-                console.error("Error playing video:", error);
-              });
-            }
+            // iOS-specific play handling
+            videoRef.current.play().catch((error) => {
+              console.error("iOS play error:", error);
+              // Fallback for strict iOS autoplay policies
+              if (error.name === "NotAllowedError") {
+                alert("Please allow camera access and tap the screen to start");
+                document.body.addEventListener(
+                  "click",
+                  () => videoRef.current?.play(),
+                  { once: true }
+                );
+              }
+            });
           }
-        })
-        .catch((error) => {
-          console.error("Error accessing camera:", error);
-        });
+        } catch (error) {
+          console.error("Camera access error:", error);
+          alert("Camera access is required for face detection");
+        }
+      };
+
+      activateCamera();
     }
 
     return () => {
       stopWebcam();
     };
-  }, [isModelsLoaded, isDone, isIOS]);
+  }, [isModelsLoaded, isDone]);
 
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto">
@@ -598,6 +655,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
             // playsInline
             muted
           />
+
           <canvas
             ref={canvasRef}
             className="absolute top-0 left-0 w-full h-full"
@@ -612,26 +670,27 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
             <>
               <svg
                 className="absolute inset-0 w-full h-full pointer-events-none"
-                preserveAspectRatio="none"
                 viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+                preserveAspectRatio="none"
+                aria-hidden="true"
               >
                 <defs>
-                  <mask id="circle-mask">
-                    <rect fill="white" height="100%" width="100%" />
+                  <mask id="center-circle-mask">
+                    <rect width="100%" height="100%" fill="white" />
                     <circle
                       cx={dimensions.width / 2}
                       cy={dimensions.height / 2}
+                      r={circleSize.width / 3}
                       fill="black"
-                      r={circleSize.width / 2}
                     />
                   </mask>
                 </defs>
                 <rect
-                  fill="black"
-                  height="100%"
-                  mask="url(#circle-mask)"
-                  opacity="0.7"
                   width="100%"
+                  height="100%"
+                  fill="black"
+                  opacity="0.7"
+                  mask="url(#center-circle-mask)"
                 />
               </svg>
             </>
