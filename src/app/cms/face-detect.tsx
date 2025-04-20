@@ -54,10 +54,10 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   // Reduce model size for mobile
   const TINY_FACE_DETECTOR_OPTIONS = useMemo(() => {
     return new faceapi.TinyFaceDetectorOptions({
-      inputSize: 224,
-      scoreThreshold: 0.2,
+      inputSize: isMobile ? 320 : 512, // Larger size for better iOS detection
+      scoreThreshold: 0.4, // Lower threshold for iOS
     });
-  }, []);
+  }, [isMobile]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 720, height: 560 });
@@ -385,8 +385,13 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       if (processingRef.current) return;
 
       // Skip frames on mobile for better performance
-      if (isMobile) {
+      if (isMobile && !isIOS) {
         frameSkipCount = (frameSkipCount + 1) % 2;
+        if (frameSkipCount !== 0) return;
+      }
+
+      if (isIOS) {
+        frameSkipCount = (frameSkipCount + 1) % 3;
         if (frameSkipCount !== 0) return;
       }
 
@@ -499,48 +504,54 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     }
   };
 
-  // Modified camera activation with iOS-specific constraints
+  // Update your camera activation useEffect
   useEffect(() => {
     if (isModelsLoaded && videoRef.current && !isDone) {
-      const constraints: MediaStreamConstraints = {
-        video: {
-          facingMode: "user",
-        },
-      };
+      const activateCamera = async () => {
+        const constraints: MediaStreamConstraints = {
+          video: {
+            facingMode: "user",
+            // Add explicit resolution constraints for iOS
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          },
+        };
 
-      // Special handling for iOS devices
-      if (isIOS) {
-        // Force hardware acceleration for iOS
-        if (videoRef.current) {
-          videoRef.current.setAttribute("playsinline", "true");
-          videoRef.current.setAttribute("webkit-playsinline", "true");
-        }
-      }
-
-      navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then((stream) => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
-            streamRef.current = stream;
+            videoRef.current.muted = true;
+            videoRef.current.playsInline = true;
+            videoRef.current.setAttribute("playsinline", "true");
 
-            // For iOS, we need to call play() after setting srcObject
-            if (isIOS) {
-              videoRef.current.play().catch((error) => {
-                console.error("Error playing video:", error);
-              });
-            }
+            // iOS-specific play handling
+            videoRef.current.play().catch((error) => {
+              console.error("iOS play error:", error);
+              // Fallback for strict iOS autoplay policies
+              if (error.name === "NotAllowedError") {
+                alert("Please allow camera access and tap the screen to start");
+                document.body.addEventListener(
+                  "click",
+                  () => videoRef.current?.play(),
+                  { once: true }
+                );
+              }
+            });
           }
-        })
-        .catch((error) => {
-          console.error("Error accessing camera:", error);
-        });
+        } catch (error) {
+          console.error("Camera access error:", error);
+          alert("Camera access is required for face detection");
+        }
+      };
+
+      activateCamera();
     }
 
     return () => {
       stopWebcam();
     };
-  }, [isModelsLoaded, isDone, isIOS]);
+  }, [isModelsLoaded, isDone]);
 
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto">
