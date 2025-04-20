@@ -55,7 +55,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   const TINY_FACE_DETECTOR_OPTIONS = useMemo(() => {
     return new faceapi.TinyFaceDetectorOptions({
       inputSize: isMobile ? 160 : 512, // Smaller for mobile (was 320)
-      scoreThreshold: isMobile ? 0.3 : 0.4, // More sensitive on mobile
+      scoreThreshold: isMobile ? 0.2 : 0.4, // More sensitive on mobile
     });
   }, [isMobile]);
 
@@ -556,8 +556,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
         const constraints: MediaStreamConstraints = {
           video: {
             facingMode: "user",
-            // width: { ideal: isMobile ? 1280 : 720 }, // Lower resolution for iOS
-            // height: { ideal: isMobile ? 720 : 1280 },
           },
         };
 
