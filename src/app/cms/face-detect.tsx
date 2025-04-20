@@ -234,7 +234,8 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       // Center and side length for square crop (tune multiplier for more/less background)
       const centerX = boxX + boxW / 2;
       const centerY = boxY + boxH / 2;
-      const sideLength = Math.max(boxW, boxH) * 1.3; // 1.2~1.4 for tight face, increase for more background
+      const sideLength =
+        Math.max(boxW, boxH) * (isFirstCapture.current ? 1.2 : 1); // Larger for first capture (main.jpg)
 
       // Ensure crop stays within video bounds
       const cropX = Math.max(0, centerX - sideLength / 2);
