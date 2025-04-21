@@ -55,7 +55,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   const TINY_FACE_DETECTOR_OPTIONS = useMemo(() => {
     return new faceapi.TinyFaceDetectorOptions({
       inputSize: isMobile ? 160 : 512, // Smaller for mobile (was 320)
-      scoreThreshold: isMobile ? 0.2 : 0.4, // More sensitive on mobile
+      scoreThreshold: 0.2,
     });
   }, [isMobile]);
 
@@ -188,45 +188,45 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
 
   const getFaceDirection = ({ yaw, pitch }: { yaw: number; pitch: number }) => {
     // Different thresholds based on device type
-    const thresholds = {
-      upDown: isMobile ? 85 : 90,
-      upUp: isMobile ? 175 : 170,
-      leftRight: isMobile ? -15 : -20,
-      rightLeft: isMobile ? 15 : 20,
-    };
+    // const thresholds = {
+    //   upDown: isMobile ? 85 : 90,
+    //   upUp: isMobile ? 175 : 170,
+    //   leftRight: isMobile ? -15 : -20,
+    //   rightLeft: isMobile ? 15 : 20,
+    // };
 
-    // if (!isMobile) {
-    //   if (pitch < 90 && yaw >= -2 && yaw <= 15) return "Up";
-    //   if (pitch > 170 && yaw >= -2 && yaw <= 15) return "Down";
-    //   if (yaw < 0) return "Right";
-    //   if (yaw > 15) return "Left";
+    if (!isMobile) {
+      if (pitch < 90 && yaw >= -2 && yaw <= 15) return "Up";
+      if (pitch > 170 && yaw >= -2 && yaw <= 15) return "Down";
+      if (yaw < 0) return "Right";
+      if (yaw > 15) return "Left";
 
-    //   return "Straight";
-    // }
+      return "Straight";
+    }
 
-    // if (pitch < 90 && yaw >= -10 && yaw <= 15) return "Up";
-    // if (pitch > 170 && yaw >= -10 && yaw <= 15) return "Down";
-    // if (yaw < -20) return "Right";
-    // if (yaw > 20) return "Left";
-
-    // return "Straight";
-
-    if (
-      pitch < thresholds.upDown &&
-      yaw >= thresholds.leftRight &&
-      yaw <= thresholds.rightLeft
-    )
-      return "Up";
-    if (
-      pitch > thresholds.upUp &&
-      yaw >= thresholds.leftRight &&
-      yaw <= thresholds.rightLeft
-    )
-      return "Down";
-    if (yaw < thresholds.leftRight) return "Right";
-    if (yaw > thresholds.rightLeft) return "Left";
+    if (pitch < 90 && yaw >= -10 && yaw <= 15) return "Up";
+    if (pitch > 170 && yaw >= -10 && yaw <= 15) return "Down";
+    if (yaw < -20) return "Right";
+    if (yaw > 20) return "Left";
 
     return "Straight";
+
+    // if (
+    //   pitch < thresholds.upDown &&
+    //   yaw >= thresholds.leftRight &&
+    //   yaw <= thresholds.rightLeft
+    // )
+    //   return "Up";
+    // if (
+    //   pitch > thresholds.upUp &&
+    //   yaw >= thresholds.leftRight &&
+    //   yaw <= thresholds.rightLeft
+    // )
+    //   return "Down";
+    // if (yaw < thresholds.leftRight) return "Right";
+    // if (yaw > thresholds.rightLeft) return "Left";
+
+    // return "Straight";
   };
 
   const isFirstCapture = useRef(true);
@@ -266,7 +266,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
 
       // const sideLength = Math.max(boxW, boxH) * faceMultiplier;
       const sideLength =
-        Math.max(boxW, boxH) * (isFirstCapture.current ? 1.2 : 1); // Larger for first capture (main.jpg)
+        Math.max(boxW, boxH) * (isFirstCapture.current ? 1.5 : 1); // Larger for first capture (main.jpg)
 
       // // Ensure crop stays within video bounds
       // const cropX = Math.max(0, centerX - sideLength / 2);
@@ -410,7 +410,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     };
 
     const captureSequence = [
-      { direction: "Straight", target: 5 },
+      { direction: "Straight", target: 6 },
       { direction: "Left", target: 5 },
       { direction: "Right", target: 5 },
       { direction: "Up", target: 5 },
