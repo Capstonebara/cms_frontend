@@ -1,6 +1,6 @@
 "use client";
 
-import { Stats } from "@/app/cms/dashboard-overview";
+import { Stats } from "@/app/dashboard/dashboard-overview";
 import { useEffect, useState } from "react";
 
 const useWebSocketStats = (url: string) => {

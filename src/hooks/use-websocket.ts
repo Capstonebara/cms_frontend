@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity } from "@/app/cms/dashboard-overview";
+import { Activity } from "@/app/dashboard/dashboard-overview";
 import { useEffect, useState } from "react";
 
 const useWebSocket = (url: string) => {
