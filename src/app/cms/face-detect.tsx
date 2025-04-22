@@ -57,8 +57,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       inputSize: 224,
       scoreThreshold: 0.2,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIOS]);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 720, height: 560 });
@@ -122,7 +121,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     return () => window.removeEventListener("resize", updateDimensions);
   }, [isMobile]);
 
-  // Load models
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = publicDir + "/models";
@@ -188,14 +186,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   };
 
   const getFaceDirection = ({ yaw, pitch }: { yaw: number; pitch: number }) => {
-    // Different thresholds based on device type
-    // const thresholds = {
-    //   upDown: isMobile ? 85 : 90,
-    //   upUp: isMobile ? 175 : 170,
-    //   leftRight: isMobile ? -15 : -20,
-    //   rightLeft: isMobile ? 15 : 20,
-    // };
-
     if (!isMobile) {
       if (pitch < 90 && yaw >= -2 && yaw <= 15) return "Up";
       if (pitch > 170 && yaw >= -2 && yaw <= 15) return "Down";
@@ -211,23 +201,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     if (yaw > 20) return "Left";
 
     return "Straight";
-
-    // if (
-    //   pitch < thresholds.upDown &&
-    //   yaw >= thresholds.leftRight &&
-    //   yaw <= thresholds.rightLeft
-    // )
-    //   return "Up";
-    // if (
-    //   pitch > thresholds.upUp &&
-    //   yaw >= thresholds.leftRight &&
-    //   yaw <= thresholds.rightLeft
-    // )
-    //   return "Down";
-    // if (yaw < thresholds.leftRight) return "Right";
-    // if (yaw > thresholds.rightLeft) return "Left";
-
-    // return "Straight";
   };
 
   const isFirstCapture = useRef(true);
@@ -269,11 +242,6 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
       const sideLength =
         Math.max(boxW, boxH) * (isFirstCapture.current ? 1.5 : 1); // Larger for first capture (main.jpg)
 
-      // // Ensure crop stays within video bounds
-      // const cropX = Math.max(0, centerX - sideLength / 2);
-      // const cropY = Math.max(0, centerY - sideLength / 2);
-      // const cropW = Math.min(sideLength, videoW - cropX);
-      // const cropH = Math.min(sideLength, videoH - cropY);
       // Ensure crop stays within video bounds as a perfect square
       const cropX = Math.max(0, centerX - sideLength / 2);
       const cropY = Math.max(0, centerY - sideLength / 2);
@@ -400,6 +368,10 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     const canvas = canvasRef.current;
     const displaySize = { width: video.width, height: video.height };
 
+    // Set canvas size to match video size
+    canvas.width = displaySize.width;
+    canvas.height = displaySize.height;
+
     faceapi.matchDimensions(canvas, displaySize);
 
     const counts: Record<string, number> = {
@@ -424,20 +396,8 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     const intervalId = setInterval(async () => {
       if (processingRef.current) return;
 
-      // Skip frames on mobile for better performance
-      // if (isMobile && !isIOS) {
-      //   frameSkipCount = (frameSkipCount + 1) % 2;
-      //   if (frameSkipCount !== 0) return;
-      // }
-
-      // if (isIOS) {
-      //   frameSkipCount = (frameSkipCount + 1) % 3;
-      //   if (frameSkipCount !== 0) return;
-      // }
-
       if (isMobile && !isIOS) {
-        // Reduce frame skipping for Android
-        frameSkipCount = (frameSkipCount + 1) % 1; // Process every frame
+        frameSkipCount = (frameSkipCount + 1) % 2;
         if (frameSkipCount !== 0) return;
       }
 
@@ -459,6 +419,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           detections,
           displaySize
         );
+
         const context = canvas.getContext("2d");
 
         if (!context) {
@@ -479,6 +440,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
         if (!isMobile) {
           faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
         }
+        // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 
         const pose = calculateFacePose(resizedDetections[0].landmarks);
         const currentDirection = getFaceDirection(pose);
@@ -491,8 +453,9 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           clearInterval(intervalId);
           setValue("lookingFor", "Done capturing all images");
           setIsDone(true);
-          setConfirmStep(true);
           processingRef.current = false;
+
+          setConfirmStep(true);
           stopWebcam(); // Add this line to stop the webcam
           return;
         }
@@ -560,34 +523,33 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
           },
         };
 
-        try {
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        // Special handling for iOS devices
+        if (isIOS) {
+          // Force hardware acceleration for iOS
           if (videoRef.current) {
-            streamRef.current = stream; // Save stream reference
-            videoRef.current.srcObject = stream;
-            streamRef.current = stream;
-            videoRef.current.muted = true;
-            videoRef.current.playsInline = true;
             videoRef.current.setAttribute("playsinline", "true");
-
-            // iOS-specific play handling
-            videoRef.current.play().catch((error) => {
-              console.error("iOS play error:", error);
-              // Fallback for strict iOS autoplay policies
-              if (error.name === "NotAllowedError") {
-                alert("Please allow camera access and tap the screen to start");
-                document.body.addEventListener(
-                  "click",
-                  () => videoRef.current?.play(),
-                  { once: true }
-                );
-              }
-            });
+            videoRef.current.setAttribute("webkit-playsinline", "true");
           }
-        } catch (error) {
-          console.error("Camera access error:", error);
-          alert("Camera access is required for face detection");
         }
+
+        navigator.mediaDevices
+          .getUserMedia(constraints)
+          .then((stream) => {
+            if (videoRef.current) {
+              videoRef.current.srcObject = stream;
+              streamRef.current = stream;
+
+              // For iOS, we need to call play() after setting srcObject
+              if (isIOS) {
+                videoRef.current.play().catch((error) => {
+                  console.error("Error playing video:", error);
+                });
+              }
+            }
+          })
+          .catch((error) => {
+            console.error("Error accessing camera:", error);
+          });
       };
 
       activateCamera();
@@ -596,7 +558,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     return () => {
       stopWebcam();
     };
-  }, [isModelsLoaded, isDone]);
+  }, [isModelsLoaded, isDone, isIOS]);
 
   return (
     <div ref={containerRef} className="w-full max-w-4xl mx-auto">
@@ -651,7 +613,7 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
             width={dimensions.width}
             onPlay={handleVideoPlay}
             autoPlay
-            // playsInline
+            playsInline
             muted
           />
 

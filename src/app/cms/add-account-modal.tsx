@@ -97,7 +97,7 @@ export function AddAccountModal({ isOpen, onClose }: AddAccountModalProps) {
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-4 items-center gap-5">
               <Label htmlFor="username" className="text-right">
                 Username
               </Label>
@@ -108,7 +108,7 @@ export function AddAccountModal({ isOpen, onClose }: AddAccountModalProps) {
               />
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
+            <div className="grid grid-cols-4 items-center gap-5">
               <Label htmlFor="password" className="text-right">
                 Password
               </Label>
@@ -133,9 +133,9 @@ export function AddAccountModal({ isOpen, onClose }: AddAccountModalProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rePassword" className="text-right">
-                Re-Password
+            <div className="grid grid-cols-4 items-center gap-5">
+              <Label htmlFor="rePassword" className="text-left">
+                Re-enter Password
               </Label>
               <div className="col-span-3 flex items-center">
                 <Input

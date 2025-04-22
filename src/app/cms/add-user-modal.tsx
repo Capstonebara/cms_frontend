@@ -305,7 +305,7 @@ export function AddUserModal({
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-5">
                   <Label htmlFor="username" className="text-right">
                     Username
                   </Label>
@@ -318,7 +318,7 @@ export function AddUserModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-5">
                   <Label htmlFor="name" className="text-right">
                     Full Name
                   </Label>
@@ -330,7 +330,7 @@ export function AddUserModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-5">
                   <Label htmlFor="apartment" className="text-right">
                     Apartment
                   </Label>
@@ -342,7 +342,7 @@ export function AddUserModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 items-center">
+                <div className="grid grid-cols-4 gap-5 items-center">
                   <Label htmlFor="gender" className="text-right">
                     Gender
                   </Label>
@@ -368,7 +368,7 @@ export function AddUserModal({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-5">
                   <Label htmlFor="phone" className="text-right">
                     Phone
                   </Label>
@@ -380,7 +380,7 @@ export function AddUserModal({
                   />
                 </div>
 
-                <div className="grid grid-cols-4 items-center gap-4">
+                <div className="grid grid-cols-4 items-center gap-5">
                   <Label htmlFor="email" className="text-right">
                     Email
                   </Label>
