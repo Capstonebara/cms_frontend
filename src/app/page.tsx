@@ -1,15 +1,24 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
   const router = useRouter();
-  router.push("/cms");
+
+  useEffect(() => {
+    const isValid = localStorage.getItem("valid");
+    if (isValid) {
+      router.push("/dashboard");
+    } else {
+      router.push("/auth");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen">
-      <Spinner />
+    <div className="flex h-screen items-center justify-center">
+      Redirecting...
     </div>
   );
 }

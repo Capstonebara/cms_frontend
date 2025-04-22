@@ -43,7 +43,7 @@ export default function Auth() {
           theme: "light",
           transition: Bounce,
         });
-        router.push("/cms");
+        router.push("/dashboard");
       } else {
         toast.error(response.message, {
           position: "top-right",

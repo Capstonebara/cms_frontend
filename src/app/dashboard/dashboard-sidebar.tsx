@@ -4,7 +4,6 @@ import Link from "next/link";
 import {
   Users,
   Clock,
-  Settings,
   LogOut,
   LayoutDashboard,
   UserCircle,
@@ -23,7 +22,7 @@ import {
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-type ViewType = "dashboard" | "users" | "logs" | "settings" | "accounts";
+type ViewType = "dashboard" | "users" | "logs" | "accounts";
 
 interface DashboardSidebarProps {
   activeView: ViewType;
@@ -89,15 +88,6 @@ export function DashboardSidebar({
             >
               <Clock className="h-5 w-5" />
               <span>Access Logs</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              isActive={activeView === "settings"}
-              onClick={() => setActiveView("settings")}
-            >
-              <Settings className="h-5 w-5" />
-              <span>Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

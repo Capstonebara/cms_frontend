@@ -30,11 +30,9 @@ export default function CMS() {
   if (!isValid) {
     router.push("/auth");
     return (
-      <>
-        <div className="flex h-screen items-center justify-center">
-          Authentication first !
-        </div>
-      </>
+      <div className="flex h-screen items-center justify-center">
+        Redirecting to login...
+      </div>
     );
   }
 
