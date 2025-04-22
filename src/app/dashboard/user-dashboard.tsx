@@ -12,7 +12,7 @@ import { UsersAccordion } from "./users-accordion";
 import { AccessLogsAccordion } from "./access-logs-accordion";
 import { AccountsList } from "./account-list";
 
-type ViewType = "dashboard" | "users" | "logs" | "settings" | "accounts";
+type ViewType = "dashboard" | "users" | "logs" | "accounts";
 
 export default function UserDashboard() {
   const [activeView, setActiveView] = useState<ViewType>("dashboard");
@@ -44,7 +44,6 @@ export default function UserDashboard() {
               {activeView === "dashboard" && "Dashboard"}
               {activeView === "users" && "Users Management"}
               {activeView === "logs" && "Access Logs"}
-              {activeView === "settings" && "Settings"}
             </h1>
           </div>
         </header>
