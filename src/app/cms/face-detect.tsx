@@ -54,10 +54,11 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
   // Reduce model size for mobile
   const TINY_FACE_DETECTOR_OPTIONS = useMemo(() => {
     return new faceapi.TinyFaceDetectorOptions({
-      inputSize: isMobile ? 160 : 512, // Smaller for mobile (was 320)
+      inputSize: 224,
       scoreThreshold: 0.2,
     });
-  }, [isMobile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isIOS]);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 720, height: 560 });
