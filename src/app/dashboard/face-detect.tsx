@@ -383,11 +383,11 @@ function FaceDetectFunction({ id, setConfirmStep }: FaceDetectProps) {
     };
 
     const captureSequence = [
-      { direction: "Straight", target: 6 },
-      { direction: "Left", target: 5 },
-      { direction: "Right", target: 5 },
-      { direction: "Up", target: 5 },
-      { direction: "Down", target: 5 },
+      { direction: "Straight", target: 11 },
+      { direction: "Left", target: 10 },
+      { direction: "Right", target: 10 },
+      { direction: "Up", target: 10 },
+      { direction: "Down", target: 10 },
     ];
 
     let currentStageIndex = 0;
