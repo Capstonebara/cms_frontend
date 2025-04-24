@@ -67,7 +67,7 @@ export async function deleteUser(userId: string) {
 
 export async function addAccount(form: AccountSchema) {
   const formData = {
-    user: form.username,
+    username: form.username,
     password: form.password,
   };
 
