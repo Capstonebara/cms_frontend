@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, UserPlus, Lock, Unlock } from "lucide-react";
+import { Plus, Trash2, UserPlus, Lock, Unlock, Key } from "lucide-react";
 import { AddAccountModal } from "./add-account-modal";
 import { DeleteConfirmationDialog } from "./delete-confirmation-dialog";
 import { deleteAccount, getAllAccounts, updateStatusAccount } from "./fetch";
@@ -19,6 +19,7 @@ import { Bounce, toast } from "react-toastify";
 import { formatTimestamp } from "@/lib/common";
 import { AddUserModal } from "./add-user-modal";
 import { Spinner } from "@/components/ui/spinner";
+import { ChangePasswordModal } from "./change-password-modal";
 
 interface Account {
   id: string;
@@ -35,6 +36,8 @@ export function AccountsList() {
   const [accountToDelete, setAccountToDelete] = useState<Account | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState("");
 
@@ -161,6 +164,11 @@ export function AccountsList() {
     setIsAddUserModalOpen(true);
   };
 
+  const handleChangePassword = (username: string) => {
+    setUser(username);
+    setIsChangePasswordModalOpen(true);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -237,6 +245,14 @@ export function AccountsList() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        title="Add Member"
+                        onClick={() => handleChangePassword(account.username)}
+                      >
+                        <Key className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         title="Delete Account"
                         onClick={() => handleDeleteClick(account)}
                         className="text-destructive hover:text-destructive hover:bg-destructive/10"
@@ -251,6 +267,12 @@ export function AccountsList() {
           </Table>
         </div>
       )}
+
+      <ChangePasswordModal
+        user={user}
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+      />
 
       <AddUserModal
         isOpen={isAddUserModalOpen}

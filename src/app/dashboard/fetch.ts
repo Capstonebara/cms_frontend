@@ -207,3 +207,21 @@ export async function updateStatusAccount(username: string) {
 
   return res.json();
 }
+
+export async function changePassword(username: string, new_password: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/change_password_admin?username=${username}&new_password=${new_password}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch logs");
+  }
+
+  return res.json();
+}

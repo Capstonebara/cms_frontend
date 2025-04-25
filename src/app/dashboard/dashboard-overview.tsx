@@ -75,7 +75,11 @@ export function DashboardOverview() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {stats.data?.total_account || <Spinner />}
+              {stats.data?.total_account !== undefined ? (
+                stats.data?.total_account
+              ) : (
+                <Spinner />
+              )}
             </div>
             <p className="text-xs text-muted-foreground">
               Registered users in the system

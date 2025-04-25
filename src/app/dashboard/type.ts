@@ -41,3 +41,10 @@ export const accountSchema = z
   });
 
 export type AccountSchema = z.infer<typeof accountSchema>;
+
+export const changePasswordSchema = z.object({
+  username: z.string(),
+  new_password: z.string(),
+});
+
+export type ChangePasswordSchema = z.infer<typeof changePasswordSchema>;
