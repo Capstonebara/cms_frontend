@@ -191,6 +191,13 @@ export function AddUserModal({
           transition: Bounce,
         });
       } else {
+        reset();
+
+        onClose();
+        setConfirmStep(false);
+        setFormStep(true);
+        setLoading(false);
+
         toast.error(embedResponse.status, {
           position: "top-right",
           autoClose: 2000,
@@ -204,6 +211,13 @@ export function AddUserModal({
         });
       }
     } catch (error) {
+      reset();
+
+      onClose();
+      setConfirmStep(false);
+      setFormStep(true);
+      setLoading(false);
+
       toast.error(String(error), {
         position: "top-right",
         autoClose: 2000,
@@ -215,7 +229,6 @@ export function AddUserModal({
         theme: "light",
         transition: Bounce,
       });
-      setLoading(false);
     }
   };
 
