@@ -22,7 +22,8 @@ export function RecentActivityCard({ activity }: RecentActivityCardProps) {
       <div className="flex-1 space-y-1">
         <p className="text-sm font-medium leading-none">{activity.name}</p>
         <p className="text-sm text-muted-foreground">
-          {activity.apartment} • {time} • {activity.device_id}
+          {activity.username} • {activity.apartment} • {time} •{" "}
+          {activity.device_id}
         </p>
       </div>
 
