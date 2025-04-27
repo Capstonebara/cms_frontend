@@ -39,12 +39,12 @@ export function DashboardOverview() {
   const [logs, setLogs] = useState<Activity[]>([]);
   const [loading, isLoading] = useState(true);
 
-  // const websocket = useWebSocket("wss://api.fptuaiclub.me/client_logs");
-  // const stats = useWebSocketStats(
-  //   "wss://api.fptuaiclub.me/admin/logs_total_ws"
-  // );
-  const websocket = useWebSocket("ws://localhost:5500/client_logs");
-  const stats = useWebSocketStats("ws://localhost:5500/admin/logs_total_ws");
+  const websocket = useWebSocket("wss://api.fptuaiclub.me/client_logs");
+  const stats = useWebSocketStats(
+    "wss://api.fptuaiclub.me/admin/logs_total_ws"
+  );
+  // const websocket = useWebSocket("wss://localhost:5500/client_logs");
+  // const stats = useWebSocketStats("wss://localhost:5500/admin/logs_total_ws");
 
   useEffect(() => {
     async function fetchLogs() {
